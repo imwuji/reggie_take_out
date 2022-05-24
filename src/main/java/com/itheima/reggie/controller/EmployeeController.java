@@ -2,6 +2,7 @@ package com.itheima.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.itheima.reggie.common.BaseContext;
 import com.itheima.reggie.common.R;
 import com.itheima.reggie.entity.Employee;
 import com.itheima.reggie.service.EmployeeService;
@@ -12,7 +13,6 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 
 @Slf4j
 @RestController
@@ -67,11 +67,11 @@ public class EmployeeController {
     public R<String> save(HttpServletRequest request, @RequestBody Employee employee) {
         String password = DigestUtils.md5DigestAsHex("123456".getBytes());
         employee.setPassword(password);
-        employee.setCreateTime(LocalDateTime.now());
+/*        employee.setCreateTime(LocalDateTime.now());
         employee.setUpdateTime(LocalDateTime.now());
         employee.setUpdateUser((Long) request.getSession().getAttribute("employee"));
-        employee.setCreateUser((Long) request.getSession().getAttribute("employee"));
-
+        employee.setCreateUser((Long) request.getSession().getAttribute("employee"));*/
+        BaseContext.setThreadLocal((Long) request.getSession().getAttribute("employee"));
         employeeService.save(employee);
 
         return R.success("添加新员工成功");
@@ -91,8 +91,10 @@ public class EmployeeController {
 
     @PutMapping
     public R<String> updateEmployee(HttpServletRequest request, @RequestBody Employee employee) {
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setUpdateUser((Long) request.getSession().getAttribute("employee"));
+ /*       employee.setUpdateTime(LocalDateTime.now());
+        employee.setUpdateUser((Long) request.getSession().getAttribute("employee"));*/
+        Long employee1 = (Long) request.getSession().getAttribute("employee");
+        BaseContext.setThreadLocal((Long) request.getSession().getAttribute("employee"));
         employeeService.updateById(employee);
         return R.success("修改成功");
     }
